@@ -76,6 +76,8 @@ int PauseVec::lookup(size_t index) {
 }
 
 void PauseVec::remove_val(int x) {
+    bool removed = false;
+
     for (size_t i = 0; i < capacity_; i++) {
         if (!is_removed[i] && data[i] == x) {
             is_removed[i] = true;
@@ -85,13 +87,17 @@ void PauseVec::remove_val(int x) {
                 min_removed = i;
             }
 
-            compact();
-
-            checkAndShrink(); 
-            return; 
+            removed = true;
+            break;
         }
     }
+
+    if (removed && min_removed < capacity_) {
+        compact();
+        checkAndShrink();
+    }
 }
+
 
 void PauseVec::compact() {
     if (min_removed >= capacity_) return;
