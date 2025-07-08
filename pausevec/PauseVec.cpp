@@ -23,8 +23,15 @@ size_t PauseVec::capacity() const {
 }
 
 size_t PauseVec::count() const {
-    return count_;
+    size_t active = 0;
+    for (size_t i = 0; i < capacity_; i++) {
+        if (!is_removed[i]) {
+            active++;
+        }
+    }
+    return active;
 }
+
 
 void PauseVec::append(int value) {
     if (count_ == capacity_) {
