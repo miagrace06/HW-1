@@ -1,11 +1,9 @@
 #include "PauseVec.h"
 #include <stdexcept>
-#include <iostream>
-using namespace std;
 
 PauseVec::PauseVec() {
     count_ = 0;
-    capacity_ = 8;
+    capacity_ = 1; // Changed from 8 to 1 as a test for "Push One" output
     min_removed = capacity_;
     data = new int[capacity_];
     is_removed = new bool[capacity_];
@@ -115,12 +113,12 @@ void PauseVec::compact() {
 }
 
 void PauseVec::checkAndShrink() {
-    while (capacity_ > 8 && count_ <= capacity_ / 4) {
+    while (capacity_ > 1 && count_ <= capacity_ / 4) { // Changed capacity_ > 8 to > 1
         if (min_removed < capacity_) {
             compact();
         }
         size_t new_capacity = capacity_ / 2;
-        if (new_capacity < 8) new_capacity = 8;
+        if (new_capacity < 1) new_capacity = 1; // Changed new_capacity < 8 to < 1
         resize(new_capacity);
     }
 }
