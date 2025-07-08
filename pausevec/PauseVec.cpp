@@ -26,14 +26,15 @@ size_t PauseVec::count() const {
 }
 
 void PauseVec::append(int value) {
+    // Compact if there are removed elements before append
     if (min_removed < capacity_) {
         compact();
     }
-    
+
     if (count_ == capacity_) {
         resize(capacity_ * 2);
     }
-    
+
     data[count_] = value;
     is_removed[count_] = false;
     count_++;
@@ -57,7 +58,10 @@ int PauseVec::remove(size_t index) {
         min_removed = actualIndex;
     }
 
+    // Compact once after removal to keep data tight
     compact();
+
+    // Shrink if necessary (only once per call)
     checkAndShrink();
 
     return removedValue;
@@ -88,6 +92,7 @@ void PauseVec::remove_val(int x) {
 
             compact();
             checkAndShrink();
+
             return;
         }
     }
@@ -116,11 +121,10 @@ void PauseVec::compact() {
 }
 
 void PauseVec::checkAndShrink() {
-    // Shrink at most once per call to avoid infinite loops
+    // Shrink once if needed, no loop to avoid infinite recursion
     if (capacity_ > 1 && count_ <= capacity_ / 4) {
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 1) new_capacity = 1;
-        compact();
         resize(new_capacity);
     }
 }
@@ -163,7 +167,7 @@ size_t PauseVec::findActualIndex(size_t logicalIndex) {
             currentLogical++;
         }
     }
-    return capacity_; 
+    return capacity_;
 }
 
 PauseVec* create_pausevec() {
