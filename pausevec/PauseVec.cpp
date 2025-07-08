@@ -47,7 +47,7 @@ int PauseVec::remove(size_t index) {
     }
     
     size_t actualIndex = findActualIndex(index);
-    if (actualIndex == capacity_) {
+    if (actualIndex == capacity_) { 
         throw std::out_of_range("Index out of range.");
     }
     
@@ -57,10 +57,6 @@ int PauseVec::remove(size_t index) {
     
     if (min_removed == capacity_ || actualIndex < min_removed) {
         min_removed = actualIndex;
-    }
-    
-    if (actualIndex > min_removed) {
-        compact();
     }
     
     checkAndShrink();
@@ -76,11 +72,6 @@ int PauseVec::lookup(size_t index) {
     size_t actualIndex = findActualIndex(index);
     if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
-    }
-    
-    if (min_removed < capacity_ && actualIndex > min_removed) {
-        compact();
-        return data[index];
     }
     
     return data[actualIndex];
