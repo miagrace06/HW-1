@@ -1,6 +1,3 @@
-#include "PauseVec.h"
-#include <stdexcept>
-
 PauseVec::PauseVec() {
     count_ = 0;
     capacity_ = 8;
@@ -23,15 +20,8 @@ size_t PauseVec::capacity() const {
 }
 
 size_t PauseVec::count() const {
-    size_t active = 0;
-    for (size_t i = 0; i < capacity_; i++) {
-        if (!is_removed[i]) {
-            active++;
-        }
-    }
-    return active;
+    return count_;
 }
-
 
 void PauseVec::append(int value) {
     if (count_ == capacity_) {
