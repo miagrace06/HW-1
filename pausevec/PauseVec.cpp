@@ -57,6 +57,10 @@ int PauseVec::remove(size_t index) {
         min_removed = actualIndex;
     }
     
+    if (min_removed < capacity_) {
+        compact();
+    }
+    
     checkAndShrink();
     
     return removedValue;
@@ -85,8 +89,11 @@ void PauseVec::remove_val(int x) {
                 min_removed = i;
             }
 
-            compact();      // Compact immediately after removal
-            checkAndShrink(); // Then shrink if necessary
+            if (min_removed < capacity_) {
+                compact();
+            }
+
+            checkAndShrink();
 
             return;
         }
@@ -117,7 +124,6 @@ void PauseVec::compact() {
 
 void PauseVec::checkAndShrink() {
     while (capacity_ > 1 && count_ <= capacity_ / 4) {
-        compact(); 
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 1) new_capacity = 1;
         resize(new_capacity);
@@ -125,7 +131,7 @@ void PauseVec::checkAndShrink() {
 }
 
 void PauseVec::resize(size_t new_capacity) {
-    // NOTE: Removed compact() here — resize assumes data is compacted already
+    // Assume data is already compacted before resize is called
 
     int* new_data = new int[new_capacity];
     bool* new_is_removed = new bool[new_capacity];
