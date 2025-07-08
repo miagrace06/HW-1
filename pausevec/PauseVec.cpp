@@ -1,3 +1,8 @@
+#include <iostream>
+#include <stdexcept>
+#include "PauseVec.h"
+using namespace std;
+
 PauseVec::PauseVec() {
     count_ = 0;
     capacity_ = 8;
