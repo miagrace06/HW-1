@@ -78,14 +78,17 @@ int PauseVec::lookup(size_t index) {
 void PauseVec::remove_val(int x) {
     for (size_t i = 0; i < capacity_; i++) {
         if (!is_removed[i] && data[i] == x) {
-            size_t logicalIndex = 0;
-            for (size_t j = 0; j < i; j++) {
-                if (!is_removed[j]) {
-                    logicalIndex++;
-                }
+            // Directly perform the removal logic for the found physical index 'i'
+            int removedValue = data[i]; // Store value if needed, though not returned by remove_val
+            is_removed[i] = true;
+            count_--;
+            
+            if (min_removed == capacity_ || i < min_removed) {
+                min_removed = i;
             }
-            remove(logicalIndex);
-            return;
+            
+            checkAndShrink(); 
+            return; // Exit after removing the first occurrence
         }
     }
 }
