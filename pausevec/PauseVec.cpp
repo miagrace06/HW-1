@@ -54,19 +54,6 @@ int PauseVec::remove(size_t index) {
         throw std::out_of_range("Index out of range.");
     }
     
-    if (index > min_removed) {
-        size_t writeIndex = min_removed;
-        for (size_t i = min_removed; i < count_; i++) {
-            if (!is_removed[i]) {
-                data[writeIndex] = data[i];
-                is_removed[writeIndex] = false;
-                writeIndex++;
-            }
-        }
-        count_ = writeIndex;
-        min_removed = capacity_;
-    }
-    
     int removedValue = data[index];
     is_removed[index] = true;
     
@@ -74,7 +61,7 @@ int PauseVec::remove(size_t index) {
         min_removed = index;
     }
     
-    if (index == min_removed) {
+    if (index >= min_removed) {
         size_t writeIndex = min_removed;
         for (size_t i = min_removed; i < count_; i++) {
             if (!is_removed[i]) {
@@ -104,6 +91,7 @@ int PauseVec::remove(size_t index) {
     
     return removedValue;
 }
+
 
 int PauseVec::lookup(size_t index) {
     if (index >= count_) {
