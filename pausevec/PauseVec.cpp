@@ -117,7 +117,6 @@ void PauseVec::compact() {
     count_ = writeIndex;
     min_removed = capacity_;
 
-    checkAndShrink();
 }
 
 void PauseVec::checkAndShrink() {
