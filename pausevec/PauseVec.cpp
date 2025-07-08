@@ -80,20 +80,20 @@ void PauseVec::remove_val(int x) {
         if (!is_removed[i] && data[i] == x) {
             is_removed[i] = true;
             count_--;
-
+            
             if (min_removed == capacity_ || i < min_removed) {
                 min_removed = i;
             }
-
-            checkAndShrink();  
-            return;
+            
+            checkAndShrink(); 
+            return; 
         }
     }
 }
 
 void PauseVec::compact() {
     if (min_removed >= capacity_) return;
-
+    
     size_t writeIndex = 0;
     for (size_t readIndex = 0; readIndex < capacity_; readIndex++) {
         if (!is_removed[readIndex]) {
@@ -104,19 +104,17 @@ void PauseVec::compact() {
             writeIndex++;
         }
     }
-
+    
     for (size_t i = writeIndex; i < capacity_; i++) {
         is_removed[i] = false;
     }
-
+    
     count_ = writeIndex;
     min_removed = capacity_;
-
 }
 
 void PauseVec::checkAndShrink() {
     while (capacity_ > 1 && count_ <= capacity_ / 4) {
-        compact(); 
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 1) new_capacity = 1;
         resize(new_capacity);
@@ -148,7 +146,7 @@ void PauseVec::resize(size_t new_capacity) {
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
-    count_ = writeIndex;        
+    count_ = writeIndex;      
     min_removed = capacity_;    
 }
 
