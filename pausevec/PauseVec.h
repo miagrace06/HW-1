@@ -1,13 +1,11 @@
 #ifndef PAUSEVEC_H
 #define PAUSEVEC_H
-
 #include <cstddef>
 
 class PauseVec {
 public:
     PauseVec();
     ~PauseVec();
-
     size_t capacity() const;
     size_t count() const;
     void append(int value);
@@ -21,11 +19,12 @@ private:
     size_t capacity_;
     size_t count_;
     size_t min_removed;
-
+    
     void compact();
     void resize(size_t new_capacity);
+    size_t findActualIndex(size_t logicalIndex); 
 };
 
 PauseVec* create_pausevec(); 
 
-#endif // PAUSEVEC_H
+#endif 
