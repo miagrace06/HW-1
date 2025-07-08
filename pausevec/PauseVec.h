@@ -1,7 +1,6 @@
 #ifndef PAUSEVEC_H
 #define PAUSEVEC_H
 #include <cstddef>
-
 class PauseVec {
 public:
     PauseVec();
@@ -12,7 +11,6 @@ public:
     int remove(size_t index);
     int lookup(size_t index);
     void remove_val(int x);  
-
 private:
     int* data;
     bool* is_removed;
@@ -25,7 +23,5 @@ private:
     size_t findActualIndex(size_t logicalIndex);
     void checkAndShrink();  
 };
-
 PauseVec* create_pausevec(); 
-
 #endif 
