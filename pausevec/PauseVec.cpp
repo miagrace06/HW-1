@@ -42,6 +42,10 @@ void PauseVec::append(int value) {
 }
 
 int PauseVec::remove(size_t index) {
+    if (index >= count_) {
+        throw std::out_of_range("Index out of range.");
+    }
+    
     size_t actualIndex = findActualIndex(index);
     if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
@@ -69,6 +73,10 @@ int PauseVec::remove(size_t index) {
 }
 
 int PauseVec::lookup(size_t index) {
+    if (index >= count_) {
+        throw std::out_of_range("Index out of range.");
+    }
+    
     size_t actualIndex = findActualIndex(index);
     if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
@@ -120,19 +128,18 @@ void PauseVec::compact() {
 }
 
 void PauseVec::resize(size_t new_capacity) {
-    if (min_removed < capacity_) {
-        compact();
-    }
+    compact();
     
     int* new_data = new int[new_capacity];
     bool* new_is_removed = new bool[new_capacity];
     
-    for (size_t i = 0; i < count_; i++) {
+    size_t copyCount = (count_ < new_capacity) ? count_ : new_capacity;
+    for (size_t i = 0; i < copyCount; i++) {
         new_data[i] = data[i];
         new_is_removed[i] = false;
     }
     
-    for (size_t i = count_; i < new_capacity; i++) {
+    for (size_t i = copyCount; i < new_capacity; i++) {
         new_is_removed[i] = false;
     }
     
@@ -154,7 +161,7 @@ size_t PauseVec::findActualIndex(size_t logicalIndex) {
             currentLogical++;
         }
     }
-    return capacity_; 
+    return capacity_;
 }
 
 PauseVec* create_pausevec() {
