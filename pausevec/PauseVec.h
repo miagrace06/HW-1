@@ -13,7 +13,8 @@ public:
     void append(int value);
     int remove(size_t index);
     int lookup(size_t index);
-    void remove_val(int x); 
+    void remove_val(int x);  
+
 private:
     int* data;
     bool* is_removed;
@@ -27,4 +28,4 @@ private:
 
 PauseVec* create_pausevec();
 
-#endif // PAUSEVEC_H
+#endif 
