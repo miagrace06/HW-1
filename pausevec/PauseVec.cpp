@@ -115,39 +115,37 @@ void PauseVec::compact() {
 
 void PauseVec::checkAndShrink() {
     while (capacity_ > 1 && count_ <= capacity_ / 4) {
+        if (min_removed < capacity_) { 
+            compact();
+        }
         size_t new_capacity = capacity_ / 2;
-        if (new_capacity < 1) new_capacity = 1;
+        if (new_capacity < 1) new_capacity = 1; 
         resize(new_capacity);
     }
 }
 
-
 void PauseVec::resize(size_t new_capacity) {
+    compact();
+    
     int* new_data = new int[new_capacity];
     bool* new_is_removed = new bool[new_capacity];
-
-    size_t writeIndex = 0;
-    for (size_t i = 0; i < capacity_; ++i) {
-        if (!is_removed[i]) {
-            if (writeIndex < new_capacity) {
-                new_data[writeIndex] = data[i];
-                new_is_removed[writeIndex] = false;
-                writeIndex++;
-            }
-        }
-    }
-
-    for (size_t i = writeIndex; i < new_capacity; i++) {
+    
+    size_t copyCount = (count_ < new_capacity) ? count_ : new_capacity;
+    for (size_t i = 0; i < copyCount; i++) {
+        new_data[i] = data[i];
         new_is_removed[i] = false;
     }
-
+    
+    for (size_t i = copyCount; i < new_capacity; i++) {
+        new_is_removed[i] = false;
+    }
+    
     delete[] data;
     delete[] is_removed;
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
-    count_ = writeIndex;      
-    min_removed = capacity_;    
+    min_removed = capacity_; 
 }
 
 size_t PauseVec::findActualIndex(size_t logicalIndex) {
