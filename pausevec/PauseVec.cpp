@@ -90,16 +90,19 @@ void PauseVec::remove_val(int x) {
 void PauseVec::compact() {
     if (min_removed >= capacity_) return;
     
-    size_t writeIndex = min_removed;
-    for (size_t i = min_removed; i < count_; i++) {
-        if (!is_removed[i]) {
-            data[writeIndex] = data[i];
+    size_t writeIndex = 0;
+    
+    for (size_t readIndex = 0; readIndex < capacity_; readIndex++) {
+        if (!is_removed[readIndex]) {
+            if (writeIndex != readIndex) {
+                data[writeIndex] = data[readIndex];
+            }
             is_removed[writeIndex] = false;
             writeIndex++;
         }
     }
     
-    for (size_t i = writeIndex; i < count_; i++) {
+    for (size_t i = writeIndex; i < capacity_; i++) {
         is_removed[i] = false;
     }
     
@@ -126,6 +129,7 @@ void PauseVec::resize(size_t new_capacity) {
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
+    min_removed = capacity_;
 }
 
 PauseVec* create_pausevec() {
