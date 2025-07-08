@@ -29,10 +29,6 @@ size_t PauseVec::count() const {
 }
 
 void PauseVec::append(int value){
-    if (min_removed < capacity_) {
-        compact();
-    }
-    
     if (count_ == capacity_){
         resize(capacity_ * 2);
     }
@@ -52,13 +48,19 @@ int PauseVec::remove(size_t index) {
     
     int removedValue = data[index];
     is_removed[index] = true;
-    count_--;
     
     if (min_removed == capacity_ || index < min_removed) {
         min_removed = index;
     }
     
-    if (capacity_ > 8 && count_ <= capacity_ / 4) {
+    size_t active_count = 0;
+    for (size_t i = 0; i < count_; i++) {
+        if (!is_removed[i]) {
+            active_count++;
+        }
+    }
+    
+    if (capacity_ > 8 && active_count <= capacity_ / 4) {
         compact();
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 8) new_capacity = 8;
@@ -69,6 +71,10 @@ int PauseVec::remove(size_t index) {
 }
 
 int PauseVec::lookup(size_t index) {
+    if (min_removed < capacity_ && index > min_removed) {
+        compact();
+    }
+    
     if (index >= count_) {
         throw std::out_of_range("Index out of range.");
     }
@@ -90,9 +96,9 @@ void PauseVec::remove_val(int x) {
 void PauseVec::compact() {
     if (min_removed >= capacity_) return;
     
-    size_t writeIndex = 0;
+    size_t writeIndex = min_removed;
     
-    for (size_t readIndex = 0; readIndex < capacity_; readIndex++) {
+    for (size_t readIndex = min_removed; readIndex < count_; readIndex++) {
         if (!is_removed[readIndex]) {
             if (writeIndex != readIndex) {
                 data[writeIndex] = data[readIndex];
@@ -100,10 +106,6 @@ void PauseVec::compact() {
             is_removed[writeIndex] = false;
             writeIndex++;
         }
-    }
-    
-    for (size_t i = writeIndex; i < capacity_; i++) {
-        is_removed[i] = false;
     }
     
     count_ = writeIndex;
@@ -130,8 +132,4 @@ void PauseVec::resize(size_t new_capacity) {
     is_removed = new_is_removed;
     capacity_ = new_capacity;
     min_removed = capacity_;
-}
-
-PauseVec* create_pausevec() {
-    return new PauseVec();
 }
