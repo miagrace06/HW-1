@@ -115,7 +115,7 @@ void PauseVec::compact() {
 
 void PauseVec::checkAndShrink() {
     while (capacity_ > 1 && count_ <= capacity_ / 4) {
-        if (min_removed < capacity_) { 
+        if (min_removed < capacity_) {
             compact();
         }
         size_t new_capacity = capacity_ / 2;
@@ -145,7 +145,7 @@ void PauseVec::resize(size_t new_capacity) {
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
-    min_removed = capacity_; 
+    min_removed = capacity_;
 }
 
 size_t PauseVec::findActualIndex(size_t logicalIndex) {
