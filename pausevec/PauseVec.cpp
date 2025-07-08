@@ -85,15 +85,10 @@ void PauseVec::remove_val(int x) {
                 min_removed = i;
             }
 
-            compact();
-            checkAndShrink();
             return;
         }
     }
 }
-
-
-
 
 void PauseVec::compact() {
     if (min_removed >= capacity_) return;
@@ -115,6 +110,8 @@ void PauseVec::compact() {
 
     count_ = writeIndex;
     min_removed = capacity_;
+
+    checkAndShrink();
 }
 
 void PauseVec::checkAndShrink() {
