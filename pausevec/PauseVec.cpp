@@ -129,3 +129,17 @@ int PauseVec::lookup(size_t index) {
     return data[index];
 }
 
+void PauseVec::remove_val(int x) {
+    for (size_t i = 0; i < count_; i++) {
+        if (!is_removed[i] && data[i] == x) {
+            remove(i);
+            return;
+        }
+    }
+}
+
+PauseVec* create_pausevec() {
+    return new PauseVec();
+}
+
+
