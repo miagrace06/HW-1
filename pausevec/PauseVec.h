@@ -7,8 +7,8 @@ class PauseVec {
 private:
 int* data;
 bool* is_removed;
-size_t count;
-size_t capacity;
+size_t count_;
+size_t capacity_;
 size_t min_removed;
 
 public:
