@@ -32,7 +32,6 @@ void PauseVec::append(int value) {
         compact();
     }
     
-    // Resize if needed
     if (count_ == capacity_) {
         resize(capacity_ * 2);
     }
@@ -43,19 +42,20 @@ void PauseVec::append(int value) {
 }
 
 int PauseVec::remove(size_t index) {
-    if (index >= count_ || is_removed[index]) {
+    size_t actualIndex = findActualIndex(index);
+    if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
     }
     
-    int removedValue = data[index];
-    is_removed[index] = true;
+    int removedValue = data[actualIndex];
+    is_removed[actualIndex] = true;
     count_--;
     
-    if (min_removed == capacity_ || index < min_removed) {
-        min_removed = index;
+    if (min_removed == capacity_ || actualIndex < min_removed) {
+        min_removed = actualIndex;
     }
     
-    if (index > min_removed) {
+    if (actualIndex > min_removed) {
         compact();
     }
     
@@ -69,21 +69,29 @@ int PauseVec::remove(size_t index) {
 }
 
 int PauseVec::lookup(size_t index) {
-    if (index >= count_ || is_removed[index]) {
+    size_t actualIndex = findActualIndex(index);
+    if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
     }
     
-    if (min_removed < capacity_ && index > min_removed) {
+    if (min_removed < capacity_ && actualIndex > min_removed) {
         compact();
+        return data[index];
     }
     
-    return data[index];
+    return data[actualIndex];
 }
 
 void PauseVec::remove_val(int x) {
-    for (size_t i = 0; i < count_; i++) {
+    for (size_t i = 0; i < capacity_; i++) {
         if (!is_removed[i] && data[i] == x) {
-            remove(i);
+            size_t logicalIndex = 0;
+            for (size_t j = 0; j < i; j++) {
+                if (!is_removed[j]) {
+                    logicalIndex++;
+                }
+            }
+            remove(logicalIndex);
             return;
         }
     }
@@ -119,7 +127,7 @@ void PauseVec::resize(size_t new_capacity) {
     int* new_data = new int[new_capacity];
     bool* new_is_removed = new bool[new_capacity];
     
-    for (size_t i = 0; i < count_ && i < new_capacity; i++) {
+    for (size_t i = 0; i < count_; i++) {
         new_data[i] = data[i];
         new_is_removed[i] = false;
     }
@@ -134,6 +142,19 @@ void PauseVec::resize(size_t new_capacity) {
     is_removed = new_is_removed;
     capacity_ = new_capacity;
     min_removed = capacity_;
+}
+
+size_t PauseVec::findActualIndex(size_t logicalIndex) {
+    size_t currentLogical = 0;
+    for (size_t i = 0; i < capacity_; i++) {
+        if (!is_removed[i]) {
+            if (currentLogical == logicalIndex) {
+                return i;
+            }
+            currentLogical++;
+        }
+    }
+    return capacity_; 
 }
 
 PauseVec* create_pausevec() {
