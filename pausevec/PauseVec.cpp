@@ -80,11 +80,13 @@ void PauseVec::remove_val(int x) {
         if (!is_removed[i] && data[i] == x) {
             is_removed[i] = true;
             count_--;
-            
+
             if (min_removed == capacity_ || i < min_removed) {
                 min_removed = i;
             }
-            
+
+            compact();
+
             checkAndShrink(); 
             return; 
         }
