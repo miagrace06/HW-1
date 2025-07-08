@@ -4,7 +4,7 @@
 PauseVec::PauseVec() {
     count_ = 0;
     capacity_ = 8;
-    min_removed = capacity_;  
+    min_removed = capacity_;
 
     data = new int[capacity_];
     is_removed = new bool[capacity_];
@@ -47,7 +47,7 @@ int PauseVec::remove(size_t index) {
         min_removed = index;
     }
 
-     if (index >= min_removed) {
+    if (index >= min_removed) {
         compact();
     }
 
@@ -61,12 +61,10 @@ int PauseVec::remove(size_t index) {
 }
 
 int PauseVec::lookup(size_t index) {
-    if (index >= count_) {
+    if (index >= count_ || is_removed[index]) {
         throw std::out_of_range("Index out of range.");
     }
-    if (is_removed[index]) {
-        throw std::out_of_range("Index out of range.");
-    }
+
     if (min_removed < capacity_ && index > min_removed) {
         compact();
     }
@@ -108,4 +106,9 @@ void PauseVec::resize(size_t new_capacity) {
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
-    min_removed = c_
+    min_removed = capacity_;
+}
+
+PauseVec* create_pausevec() {
+    return new PauseVec();
+}
