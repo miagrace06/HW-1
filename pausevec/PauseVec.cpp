@@ -27,6 +27,9 @@ size_t PauseVec::count() const {
 }
 
 void PauseVec::append(int value) {
+    if (min_removed < capacity_) {
+        compact();
+    }
     if (count_ == capacity_) {
         resize(capacity_ * 2);
     }
@@ -64,20 +67,10 @@ int PauseVec::lookup(size_t index) {
     if (index >= count_ || is_removed[index]) {
         throw std::out_of_range("Index out of range.");
     }
-
     if (min_removed < capacity_ && index > min_removed) {
         compact();
     }
     return data[index];
-}
-
-void PauseVec::remove_val(int x) {
-    for (size_t i = 0; i < count_; i++) {
-        if (!is_removed[i] && data[i] == x) {
-            remove(i);
-            return;
-        }
-    }
 }
 
 void PauseVec::compact() {
