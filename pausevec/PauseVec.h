@@ -22,7 +22,8 @@ private:
     
     void compact();
     void resize(size_t new_capacity);
-    size_t findActualIndex(size_t logicalIndex); 
+    size_t findActualIndex(size_t logicalIndex);
+    void checkAndShrink();  
 };
 
 PauseVec* create_pausevec(); 
