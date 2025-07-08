@@ -63,11 +63,7 @@ int PauseVec::remove(size_t index) {
         compact();
     }
     
-    if (capacity_ > 8 && count_ <= capacity_ / 4) {
-        size_t new_capacity = capacity_ / 2;
-        if (new_capacity < 8) new_capacity = 8;
-        resize(new_capacity);
-    }
+    checkAndShrink();
     
     return removedValue;
 }
@@ -127,6 +123,17 @@ void PauseVec::compact() {
     min_removed = capacity_;
 }
 
+void PauseVec::checkAndShrink() {
+    while (capacity_ > 8 && count_ <= capacity_ / 4) {
+        if (min_removed < capacity_) {
+            compact();
+        }
+        size_t new_capacity = capacity_ / 2;
+        if (new_capacity < 8) new_capacity = 8;
+        resize(new_capacity);
+    }
+}
+
 void PauseVec::resize(size_t new_capacity) {
     compact();
     
@@ -161,7 +168,7 @@ size_t PauseVec::findActualIndex(size_t logicalIndex) {
             currentLogical++;
         }
     }
-    return capacity_;
+    return capacity_; 
 }
 
 PauseVec* create_pausevec() {
