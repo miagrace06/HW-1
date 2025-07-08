@@ -3,7 +3,7 @@
 
 PauseVec::PauseVec() {
     count_ = 0;
-    capacity_ = 1; 
+    capacity_ = 1;
     min_removed = capacity_;
     data = new int[capacity_];
     is_removed = new bool[capacity_];
@@ -43,23 +43,23 @@ int PauseVec::remove(size_t index) {
     if (index >= count_) {
         throw std::out_of_range("Index out of range.");
     }
-    
+
     size_t actualIndex = findActualIndex(index);
-    if (actualIndex == capacity_) { 
+    if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
     }
-    
+
     int removedValue = data[actualIndex];
     is_removed[actualIndex] = true;
     count_--;
-    
+
     if (min_removed == capacity_ || actualIndex < min_removed) {
         min_removed = actualIndex;
     }
-    
+
     compact();
     checkAndShrink();
-    
+
     return removedValue;
 }
 
@@ -67,12 +67,12 @@ int PauseVec::lookup(size_t index) {
     if (index >= count_) {
         throw std::out_of_range("Index out of range.");
     }
-    
+
     size_t actualIndex = findActualIndex(index);
     if (actualIndex == capacity_) {
         throw std::out_of_range("Index out of range.");
     }
-    
+
     return data[actualIndex];
 }
 
@@ -116,14 +116,12 @@ void PauseVec::compact() {
 }
 
 void PauseVec::checkAndShrink() {
-    while (capacity_ > 1 && count_ <= capacity_ / 4) {
+    // Shrink at most once per call to avoid infinite loops
+    if (capacity_ > 1 && count_ <= capacity_ / 4) {
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 1) new_capacity = 1;
-        compact();  // Compact before resizing to keep data dense
+        compact();
         resize(new_capacity);
-        if (capacity_ == new_capacity) {  // Avoid infinite loop if no size change
-            break;
-        }
     }
 }
 
@@ -151,8 +149,8 @@ void PauseVec::resize(size_t new_capacity) {
     data = new_data;
     is_removed = new_is_removed;
     capacity_ = new_capacity;
-    count_ = writeIndex;        
-    min_removed = capacity_;    
+    count_ = writeIndex;
+    min_removed = capacity_;
 }
 
 size_t PauseVec::findActualIndex(size_t logicalIndex) {
