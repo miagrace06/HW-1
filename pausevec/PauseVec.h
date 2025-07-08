@@ -24,7 +24,7 @@ private:
     void compact();
     void resize(size_t new_capacity);
 
-    friend PauseVec* create_pausevec(); 
+    PauseVec* create_pausevec(); 
 };
 
 PauseVec* create_pausevec();
