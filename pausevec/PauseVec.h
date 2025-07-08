@@ -13,7 +13,7 @@ public:
     void append(int value);
     int remove(size_t index);
     int lookup(size_t index);
-    void remove_val(int x);
+    void remove_val(int x);  
 
 private:
     int* data;
@@ -26,6 +26,6 @@ private:
     void resize(size_t new_capacity);
 };
 
-PauseVec* create_pausevec();
+PauseVec* create_pausevec(); 
 
-#endif 
+#endif // PAUSEVEC_H
