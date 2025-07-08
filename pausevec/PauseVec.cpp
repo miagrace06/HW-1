@@ -1,6 +1,6 @@
-#include <iostream>
-#include <stdexcept>
 #include "PauseVec.h"
+#include <stdexcept>
+#include <iostream>
 using namespace std;
 
 PauseVec::PauseVec() {
@@ -29,9 +29,14 @@ size_t PauseVec::count() const {
 }
 
 void PauseVec::append(int value) {
+    if (min_removed < capacity_) {
+        compact();
+    }
+
     if (count_ == capacity_) {
         resize(capacity_ * 2);
     }
+
     data[count_] = value;
     is_removed[count_] = false;
     count_++;
@@ -44,6 +49,7 @@ int PauseVec::remove(size_t index) {
 
     int removedValue = data[index];
     is_removed[index] = true;
+    count_--;
 
     if (min_removed == capacity_ || index < min_removed) {
         min_removed = index;
@@ -70,12 +76,13 @@ int PauseVec::lookup(size_t index) {
     if (min_removed < capacity_ && index > min_removed) {
         compact();
     }
+
     return data[index];
 }
 
 void PauseVec::remove_val(int x) {
-    for (size_t i = 0; i < count_; i++) {
-        if (!is_removed[i] && data[i] == x) {
+    for (size_t i = 0; i < count_ + (capacity_ - count_); i++) {
+        if (i < capacity_ && !is_removed[i] && data[i] == x) {
             remove(i);
             return;
         }
@@ -86,7 +93,7 @@ void PauseVec::compact() {
     if (min_removed >= capacity_) return;
 
     size_t writeIndex = 0;
-    for (size_t readIndex = 0; readIndex < count_; readIndex++) {
+    for (size_t readIndex = 0; readIndex < capacity_; readIndex++) {
         if (!is_removed[readIndex]) {
             if (writeIndex != readIndex) {
                 data[writeIndex] = data[readIndex];
@@ -95,6 +102,7 @@ void PauseVec::compact() {
             writeIndex++;
         }
     }
+
     count_ = writeIndex;
     min_removed = capacity_;
 }
@@ -105,8 +113,9 @@ void PauseVec::resize(size_t new_capacity) {
 
     for (size_t i = 0; i < count_; i++) {
         new_data[i] = data[i];
-        new_is_removed[i] = is_removed[i];
+        new_is_removed[i] = false;
     }
+
     for (size_t i = count_; i < new_capacity; i++) {
         new_is_removed[i] = false;
     }
