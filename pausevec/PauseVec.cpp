@@ -85,6 +85,12 @@ void PauseVec::remove_val(int x) {
                 min_removed = i;
             }
 
+            if (count_ > capacity_ / 4 || capacity_ == 1) {
+                compact();  
+            } else {
+                checkAndShrink();  
+            }
+
             return;
         }
     }
