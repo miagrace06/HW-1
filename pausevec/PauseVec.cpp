@@ -1,5 +1,6 @@
 #include "PauseVec.h"
 #include <stdexcept>
+#include <iostream>
 
 PauseVec::PauseVec() {
     count_ = 0;
@@ -10,9 +11,11 @@ PauseVec::PauseVec() {
     for (size_t i = 0; i < capacity_; i++) {
         is_removed[i] = false;
     }
+    std::cerr << "PV Ctor: cap=" << capacity_ << ", count=" << count_ << ", min_rem=" << min_removed << std::endl;
 }
 
 PauseVec::~PauseVec() {
+    std::cerr << "PV Dtor: Final: cap=" << capacity_ << ", count=" << count_ << std::endl;
     delete[] data;
     delete[] is_removed;
 }
@@ -26,6 +29,7 @@ size_t PauseVec::count() const {
 }
 
 void PauseVec::append(int value) {
+    std::cerr << "Append(" << value << ") BEFORE: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     if (min_removed < capacity_) {
         compact();
     }
@@ -37,9 +41,11 @@ void PauseVec::append(int value) {
     data[count_] = value;
     is_removed[count_] = false;
     count_++;
+    std::cerr << "Append(" << value << ") AFTER: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
 }
 
 int PauseVec::remove(size_t index) {
+    std::cerr << "Remove(" << index << ") BEFORE: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     if (index >= count_) {
         throw std::out_of_range("Index out of range.");
     }
@@ -59,6 +65,7 @@ int PauseVec::remove(size_t index) {
     
     checkAndShrink();
     
+    std::cerr << "Remove(" << index << ") AFTER: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     return removedValue;
 }
 
@@ -76,6 +83,7 @@ int PauseVec::lookup(size_t index) {
 }
 
 void PauseVec::remove_val(int x) {
+    std::cerr << "RemoveVal(" << x << ") BEFORE: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     for (size_t i = 0; i < capacity_; i++) {
         if (!is_removed[i] && data[i] == x) {
             is_removed[i] = true;
@@ -86,13 +94,19 @@ void PauseVec::remove_val(int x) {
             }
             
             checkAndShrink(); 
+            std::cerr << "RemoveVal(" << x << ") AFTER: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
             return; 
         }
     }
+    std::cerr << "RemoveVal(" << x << ") - Value not found." << std::endl;
 }
 
 void PauseVec::compact() {
-    if (min_removed >= capacity_) return;
+    std::cerr << "Compact() BEFORE: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
+    if (min_removed >= capacity_) {
+        std::cerr << "Compact() - No holes, returning." << std::endl;
+        return;
+    }
     
     size_t writeIndex = 0;
     for (size_t readIndex = 0; readIndex < capacity_; readIndex++) {
@@ -111,20 +125,26 @@ void PauseVec::compact() {
     
     count_ = writeIndex;
     min_removed = capacity_;
+    std::cerr << "Compact() AFTER: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
 }
 
 void PauseVec::checkAndShrink() {
+    std::cerr << "CheckAndShrink() START: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     while (capacity_ > 1 && count_ <= capacity_ / 4) {
+        std::cerr << "  CheckAndShrink() LOOP: C=" << count_ << ", Cap=" << capacity_ << ", Threshold=" << (capacity_ / 4) << std::endl;
         if (min_removed < capacity_) {
             compact();
         }
         size_t new_capacity = capacity_ / 2;
         if (new_capacity < 1) new_capacity = 1; 
         resize(new_capacity);
+        std::cerr << "  CheckAndShrink() After resize: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     }
+    std::cerr << "CheckAndShrink() END: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
 }
 
 void PauseVec::resize(size_t new_capacity) {
+    std::cerr << "Resize(" << new_capacity << ") BEFORE: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
     compact();
     
     int* new_data = new int[new_capacity];
@@ -146,6 +166,7 @@ void PauseVec::resize(size_t new_capacity) {
     is_removed = new_is_removed;
     capacity_ = new_capacity;
     min_removed = capacity_;
+    std::cerr << "Resize(" << new_capacity << ") AFTER: C=" << count_ << ", Cap=" << capacity_ << ", MinRem=" << min_removed << std::endl;
 }
 
 size_t PauseVec::findActualIndex(size_t logicalIndex) {
